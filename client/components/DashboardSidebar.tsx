@@ -9,11 +9,8 @@ import {
   User,
   CalendarDays,
   History,
-  Settings,
   LayoutDashboard,
   Users,
-  Compass,
-  FileBarChart,
   LogOut,
   Home
 } from 'lucide-react';
@@ -102,7 +99,7 @@ export default function DashboardSidebar({ isAdmin = false }: SidebarProps) {
         >
           <LogOut className="w-4 h-4 text-red-500" />
           <span>Sign Out</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );
