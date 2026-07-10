@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sacred-saffron: #D97706;
+  --color-spiritual-maroon: #7C1C1C;
+  --color-divine-gold: #F59E0B;
+  --color-warm-cream: #FAF6F0;
+  --color-sand: #F3EFE9;
+  --color-deep-rust: #92400E;
+  
+  --font-serif: var(--font-lora), Georgia, serif;
+  --font-display: var(--font-cinzel), serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  --background: #FAF6F0;
+  --foreground: #2C2520;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbar for Indian Ethnic Theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF6F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #7C1C1C;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D97706;
+}
+
+/* Mandala animation rotate */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
