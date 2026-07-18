@@ -9,7 +9,7 @@
  */
 import axios from 'axios';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://darshanease-backend.onrender.com';
 
 // Create instance — baseURL is the Render URL in production, empty in local dev
 const api = axios.create({
