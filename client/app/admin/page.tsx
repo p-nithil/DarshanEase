@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Landmark, Users, CalendarDays, TrendingUp, IndianRupee, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -35,9 +35,9 @@ export default function AdminDashboardHome() {
         setLoading(true);
         // Parallel requests to load dashboard aggregates
         const [bookingsRes, templesRes, usersRes] = await Promise.all([
-          axios.get('/api/bookings/all'),
-          axios.get('/api/temples'),
-          axios.get('/api/users')
+          api.get('/api/bookings/all'),
+          api.get('/api/temples'),
+          api.get('/api/users')
         ]);
 
         if (bookingsRes.data.success && templesRes.data.success && usersRes.data.success) {

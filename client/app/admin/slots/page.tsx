@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { History, Plus, Loader2, Landmark, Calendar, Sliders } from 'lucide-react';
 
 interface Temple {
@@ -60,7 +60,7 @@ export default function AdminSlotsPage() {
     const fetchTemples = async () => {
       try {
         setLoadingTemples(true);
-        const res = await axios.get('/api/temples');
+        const res = await api.get('/api/temples');
         if (res.data && res.data.success) {
           setTemples(res.data.data);
           if (res.data.data.length > 0) {
@@ -96,7 +96,7 @@ export default function AdminSlotsPage() {
       if (filterTemple) params.append('templeId', filterTemple);
       if (filterDate) params.append('date', filterDate);
 
-      const res = await axios.get(`/api/slots?${params.toString()}`);
+      const res = await api.get(`/api/slots?${params.toString()}`);
       if (res.data && res.data.success) {
         setSlots(res.data.data.slice(0, 50)); // cap list at 50 slots for UI audit
       }
@@ -142,7 +142,7 @@ export default function AdminSlotsPage() {
 
     try {
       setGenerating(true);
-      const res = await axios.post('/api/slots/generate', {
+      const res = await api.post('/api/slots/generate', {
         templeId: genTempleId,
         startDate: genStartDate,
         endDate: genEndDate,

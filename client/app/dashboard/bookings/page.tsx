@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Landmark, Calendar, FileText, CheckCircle, XCircle, Printer, Loader2, X } from 'lucide-react';
 
 interface Booking {
@@ -35,7 +35,7 @@ export default function UserBookingsPage() {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/bookings/my');
+      const res = await api.get('/api/bookings/my');
       if (res.data && res.data.success) {
         setBookings(res.data.data);
       }
@@ -57,7 +57,7 @@ export default function UserBookingsPage() {
 
     try {
       setCancellingId(bookingId);
-      const res = await axios.put(`/api/bookings/${bookingId}/cancel`);
+      const res = await api.put(`/api/bookings/${bookingId}/cancel`);
       if (res.data && res.data.success) {
         showToast('Darshan booking cancelled successfully. Your slots have been released.', 'success');
         // Refresh

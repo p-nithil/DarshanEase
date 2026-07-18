@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import TempleCard from '@/components/TempleCard';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Search, Filter, SlidersHorizontal, Landmark, Loader2 } from 'lucide-react';
 
 interface Temple {
@@ -47,7 +47,7 @@ export default function TemplesPage() {
       if (sortBy === 'priceDesc') params.append('sort', 'priceDesc');
       if (sortBy === 'name') params.append('sort', 'name');
 
-      const res = await axios.get(`/api/temples?${params.toString()}`);
+      const res = await api.get(`/api/temples?${params.toString()}`);
       if (res.data && res.data.success) {
         setTemples(res.data.data);
       }

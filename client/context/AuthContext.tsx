@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '@/lib/api';
 
 // ─── Token helpers (localStorage for cross-domain Vercel → Render) ───────────
 const TOKEN_KEY = 'darshan_token';
@@ -11,24 +11,13 @@ export const getToken = (): string | null => {
   return localStorage.getItem(TOKEN_KEY);
 };
 
-const saveToken = (token: string) => {
+export const saveToken = (token: string) => {
   if (typeof window !== 'undefined') localStorage.setItem(TOKEN_KEY, token);
 };
 
-const clearToken = () => {
+export const clearToken = () => {
   if (typeof window !== 'undefined') localStorage.removeItem(TOKEN_KEY);
 };
-
-// ─── Axios defaults ───────────────────────────────────────────────────────────
-// Attach Bearer token to every request automatically
-axios.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers = config.headers || {};
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
-  return config;
-});
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface UserSession {
@@ -73,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     try {
       setLoading(true);
-      const res = await axios.get('/api/auth/me');
+      const res = await api.get('/api/auth/me');
       if (res.data && res.data.success) {
         setUser(res.data.user);
       } else {
@@ -96,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const res = await axios.post('/api/auth/login', { email, password });
+      const res = await api.post('/api/auth/login', { email, password });
       if (res.data && res.data.success) {
         if (res.data.token) saveToken(res.data.token);
         setUser(res.data.user);
@@ -113,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, phone: string, password: string) => {
     try {
       setLoading(true);
-      const res = await axios.post('/api/auth/register', { name, email, phone, password });
+      const res = await api.post('/api/auth/register', { name, email, phone, password });
       if (res.data && res.data.success) {
         if (res.data.token) saveToken(res.data.token);
         setUser(res.data.user);
@@ -132,8 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       clearToken();
       setUser(null);
-      // Best-effort server-side cookie clear (ignore errors)
-      await axios.post('/api/auth/logout').catch(() => {});
+      await api.post('/api/auth/logout').catch(() => {});
     } finally {
       setLoading(false);
     }

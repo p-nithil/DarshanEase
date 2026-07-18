@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import TempleCard from '@/components/TempleCard';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Landmark, Compass, Calendar, CheckSquare, ShieldCheck, HeartHandshake, ArrowRight, Loader2 } from 'lucide-react';
 
 interface Temple {
@@ -26,7 +26,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchTemples = async () => {
       try {
-        const res = await axios.get('/api/temples');
+        const res = await api.get('/api/temples');
         if (res.data && res.data.success) {
           setTemples(res.data.data.slice(0, 3)); // show top 3 popular
         }

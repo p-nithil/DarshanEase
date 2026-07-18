@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Landmark, MapPin, Clock, Calendar, Users, ShieldAlert, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface DarshanType {
@@ -100,7 +100,7 @@ export default function TempleDetailPage({ params }: PageProps) {
     const fetchTempleDetails = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`/api/temples/${templeId}`);
+        const res = await api.get(`/api/temples/${templeId}`);
         if (res.data && res.data.success) {
           setTemple(res.data.data);
           // Set first darshan type by default
@@ -126,7 +126,7 @@ export default function TempleDetailPage({ params }: PageProps) {
       setLoadingSlots(true);
       setSelectedSlot(null); // Reset selected slot
       
-      const res = await axios.get(`/api/slots/temple/${templeId}?date=${selectedDate}`);
+      const res = await api.get(`/api/slots/temple/${templeId}?date=${selectedDate}`);
       if (res.data && res.data.success) {
         // Filter slots matching the selected darshan category
         const filtered = res.data.data.filter(
@@ -171,7 +171,7 @@ export default function TempleDetailPage({ params }: PageProps) {
       
       const totalPrice = selectedDarshan ? selectedDarshan.price * devoteesCount : 0;
       
-      const res = await axios.post('/api/bookings', {
+      const res = await api.post('/api/bookings', {
         templeId,
         slotId: selectedSlot._id,
         date: selectedDate,

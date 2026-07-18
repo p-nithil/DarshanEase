@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Landmark, Plus, Edit, Trash2, X, PlusCircle, MinusCircle, Loader2 } from 'lucide-react';
 
 interface DarshanType {
@@ -59,7 +59,7 @@ export default function AdminTemplesPage() {
   const fetchTemples = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/temples');
+      const res = await api.get('/api/temples');
       if (res.data && res.data.success) {
         setTemples(res.data.data);
       }
@@ -108,7 +108,7 @@ export default function AdminTemplesPage() {
     }
 
     try {
-      const res = await axios.delete(`/api/temples/${templeId}`);
+      const res = await api.delete(`/api/temples/${templeId}`);
       if (res.data && res.data.success) {
         showToast('Temple deleted successfully', 'success');
         fetchTemples();
@@ -141,10 +141,10 @@ export default function AdminTemplesPage() {
       let res;
       if (editingTemple) {
         // Update
-        res = await axios.put(`/api/temples/${editingTemple._id}`, payload);
+        res = await api.put(`/api/temples/${editingTemple._id}`, payload);
       } else {
         // Create
-        res = await axios.post('/api/temples', payload);
+        res = await api.post('/api/temples', payload);
       }
 
       if (res.data && res.data.success) {

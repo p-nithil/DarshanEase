@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Search, Filter, Calendar, Loader2, CheckCircle2, XCircle, FileText, Printer, X } from 'lucide-react';
 
 interface Booking {
@@ -39,7 +39,7 @@ export default function AdminBookingsPage() {
       if (dateFilter) params.append('date', dateFilter);
       if (searchTerm) params.append('search', searchTerm);
 
-      const res = await axios.get(`/api/bookings/all?${params.toString()}`);
+      const res = await api.get(`/api/bookings/all?${params.toString()}`);
       if (res.data && res.data.success) {
         setBookings(res.data.data);
       }
@@ -65,7 +65,7 @@ export default function AdminBookingsPage() {
 
     try {
       setUpdatingId(bookingId);
-      const res = await axios.put(`/api/bookings/${bookingId}/status`, {
+      const res = await api.put(`/api/bookings/${bookingId}/status`, {
         bookingStatus: newStatus
       });
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Landmark, Calendar, Award, ShieldAlert, ArrowRight, Loader2 } from 'lucide-react';
 
 interface Booking {
@@ -29,7 +29,7 @@ export default function UserDashboardHome() {
   useEffect(() => {
     const fetchMyBookings = async () => {
       try {
-        const res = await axios.get('/api/bookings/my');
+        const res = await api.get('/api/bookings/my');
         if (res.data && res.data.success) {
           setBookings(res.data.data);
         }

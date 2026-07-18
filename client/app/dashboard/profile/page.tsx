@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { User, Mail, Phone, Lock, Loader2, Save } from 'lucide-react';
 
 export default function DevoteeProfilePage() {
@@ -45,7 +45,7 @@ export default function DevoteeProfilePage() {
   const onUpdateProfile = async (data: any) => {
     try {
       setSavingProfile(true);
-      const res = await axios.put('/api/users/profile/update', data);
+      const res = await api.put('/api/users/profile/update', data);
       if (res.data && res.data.success) {
         showToast('Devotee profile updated successfully', 'success');
         await refreshUser(); // update context user info
@@ -67,7 +67,7 @@ export default function DevoteeProfilePage() {
 
     try {
       setSavingPassword(true);
-      const res = await axios.put('/api/users/profile/password', {
+      const res = await api.put('/api/users/profile/password', {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword
       });

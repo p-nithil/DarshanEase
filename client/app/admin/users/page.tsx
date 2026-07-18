@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
+import api from '@/lib/api';
 import { Users, Trash2, Edit2, Shield, Loader2 } from 'lucide-react';
 
 interface DevoteeUser {
@@ -25,7 +25,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/users');
+      const res = await api.get('/api/users');
       if (res.data && res.data.success) {
         setUsers(res.data.data);
       }
@@ -56,7 +56,7 @@ export default function AdminUsersPage() {
       const userToUpdate = users.find((u) => u._id === userId);
       if (!userToUpdate) return;
 
-      const res = await axios.put(`/api/users/${userId}`, {
+      const res = await api.put(`/api/users/${userId}`, {
         ...userToUpdate,
         role: newRole
       });
@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
 
     try {
       setUpdatingId(userId);
-      const res = await axios.delete(`/api/users/${userId}`);
+      const res = await api.delete(`/api/users/${userId}`);
       if (res.data && res.data.success) {
         showToast('Devotee account deleted successfully', 'success');
         fetchUsers();
