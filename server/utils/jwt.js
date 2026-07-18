@@ -8,11 +8,12 @@ const sendTokenResponse = (user, statusCode, res) => {
     { expiresIn: '30d' }
   );
 
+  // Cookie options (kept for local dev / same-domain)
   const options = {
     expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   };
 
   res
@@ -20,6 +21,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     .cookie('token', token, options)
     .json({
       success: true,
+      token, // ← also send token in body for cross-domain localStorage auth
       user: {
         id: user._id,
         name: user.name,

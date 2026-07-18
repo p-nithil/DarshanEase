@@ -3,9 +3,34 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-// Configure axios default settings
-axios.defaults.withCredentials = true;
+// ─── Token helpers (localStorage for cross-domain Vercel → Render) ───────────
+const TOKEN_KEY = 'darshan_token';
 
+export const getToken = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_KEY);
+};
+
+const saveToken = (token: string) => {
+  if (typeof window !== 'undefined') localStorage.setItem(TOKEN_KEY, token);
+};
+
+const clearToken = () => {
+  if (typeof window !== 'undefined') localStorage.removeItem(TOKEN_KEY);
+};
+
+// ─── Axios defaults ───────────────────────────────────────────────────────────
+// Attach Bearer token to every request automatically
+axios.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface UserSession {
   id: string;
   name: string;
@@ -33,21 +58,31 @@ export const useAuth = () => {
   return context;
 };
 
+// ─── Provider ─────────────────────────────────────────────────────────────────
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  /** Validate the stored token against the backend and hydrate user state */
   const refreshUser = useCallback(async () => {
+    const token = getToken();
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const res = await axios.get('/api/auth/me');
       if (res.data && res.data.success) {
         setUser(res.data.user);
       } else {
+        clearToken();
         setUser(null);
       }
-    } catch (error) {
-      // 401 Unauthorized expected if guest
+    } catch {
+      // 401 = expired/invalid token — treat as guest
+      clearToken();
       setUser(null);
     } finally {
       setLoading(false);
@@ -63,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       const res = await axios.post('/api/auth/login', { email, password });
       if (res.data && res.data.success) {
+        if (res.data.token) saveToken(res.data.token);
         setUser(res.data.user);
       }
     } catch (error: any) {
@@ -79,6 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       const res = await axios.post('/api/auth/register', { name, email, phone, password });
       if (res.data && res.data.success) {
+        if (res.data.token) saveToken(res.data.token);
         setUser(res.data.user);
       }
     } catch (error: any) {
@@ -93,10 +130,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       setLoading(true);
-      await axios.post('/api/auth/logout');
+      clearToken();
       setUser(null);
-    } catch (error: any) {
-      console.error('Logout failed:', error.message);
+      // Best-effort server-side cookie clear (ignore errors)
+      await axios.post('/api/auth/logout').catch(() => {});
     } finally {
       setLoading(false);
     }

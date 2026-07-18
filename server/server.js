@@ -16,13 +16,31 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS configuration (essential for frontend cookie communication)
-app.use(
-  cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    credentials: true
-  })
-);
+// CORS configuration — allow any Vercel domain + localhost in dev
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+
+    // Allow any vercel.app subdomain automatically
+    const isVercel = /\.vercel\.app$/.test(origin);
+
+    if (allowedOrigins.includes(origin) || isVercel) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin '${origin}' not allowed`));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 // Import routers
 const authRouter = require('./routes/authRoutes');
@@ -40,7 +58,7 @@ app.use('/api/users', userRouter);
 
 // Base route
 app.get('/', (req, res) => {
-  res.send('DarshanEase Backend API is running successfully');
+  res.json({ message: 'DarshanEase Backend API is running 🛕' });
 });
 
 // Global Error Handler

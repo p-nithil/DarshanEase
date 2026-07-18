@@ -29,22 +29,20 @@ export default function SignupPage() {
     }
   });
 
-  // Redirect if logged in
+  // If already logged in, redirect away from signup page
   useEffect(() => {
-    if (user) {
-      if (user.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
+    if (!authLoading && user) {
+      router.replace('/');
     }
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
   const onSubmit = async (data: any) => {
     try {
       setSubmitting(true);
       await authRegister(data.name, data.email, data.phone, data.password);
-      showToast('Registration successful! Welcome to DarshanEase.', 'success');
+      showToast('Registration successful! Welcome to DarshanEase 🙏', 'success');
+      // Always redirect to home after registration
+      router.replace('/');
     } catch (error: any) {
       showToast(error.message || 'Registration failed', 'error');
     } finally {
@@ -177,7 +175,7 @@ export default function SignupPage() {
               disabled={submitting || authLoading}
               className="w-full bg-sacred-saffron hover:bg-deep-rust disabled:bg-amber-400 text-warm-cream border border-divine-gold py-3 rounded-md font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-md mt-2"
             >
-              {submitting || authLoading ? (
+              {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Registering Devotee...</span>

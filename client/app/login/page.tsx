@@ -27,22 +27,26 @@ export default function LoginPage() {
     }
   });
 
-  // Redirect if already logged in
+  // Redirect if already logged in (e.g. came back to login page after session restored)
   useEffect(() => {
-    if (user) {
+    if (!authLoading && user) {
       if (user.role === 'admin') {
-        router.push('/admin');
+        router.replace('/admin');
       } else {
-        router.push('/dashboard');
+        router.replace('/');
       }
     }
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
   const onSubmit = async (data: any) => {
     try {
       setSubmitting(true);
       await login(data.email, data.password);
-      showToast('Logged in successfully', 'success');
+      showToast('Logged in successfully! Welcome back 🙏', 'success');
+      // Redirect immediately after successful login
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/';
+      router.replace(redirect);
     } catch (error: any) {
       showToast(error.message || 'Login failed', 'error');
     } finally {
@@ -126,7 +130,7 @@ export default function LoginPage() {
               disabled={submitting || authLoading}
               className="w-full bg-sacred-saffron hover:bg-deep-rust disabled:bg-amber-400 text-warm-cream border border-divine-gold py-3 rounded-md font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-md"
             >
-              {submitting || authLoading ? (
+              {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Verifying credentials...</span>

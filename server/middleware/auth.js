@@ -5,8 +5,12 @@ const User = require('../models/User');
 exports.protect = async (req, res, next) => {
   let token;
 
-  // Read token from cookie
-  if (req.cookies && req.cookies.token) {
+  // 1. Check Authorization header (Bearer token) — used by frontend in cross-domain deployments
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  // 2. Fallback: read token from cookie (local dev / same-domain)
+  else if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
   }
 
