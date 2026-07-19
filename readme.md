@@ -1,4 +1,4 @@
-
+hi
 # DarshanEase 🛕 — Temple Darshan Booking Platform
 
 A full-stack, production-ready Indian ethnic-themed darshan booking application. Book VIP darshans, manage temple schedules, and coordinate pilgrim visits with ease.
